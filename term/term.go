@@ -43,6 +43,7 @@ const (
 	SliceFunctionName = "slice"
 	ReverseFuncName   = "reverse"
 	ExpFunctionName   = "exp"
+	XorFunctionName   = "xor"
 	AndFunctionName   = "and"
 	OrFunctionName    = "or"
 	AddFunctionName   = "add"
@@ -876,7 +877,7 @@ func Evaluate(t Term) (Term, error) {
 	switch f.Name {
 	case CatFunctionName:
 		return handleCatFunction(f, newArgs, modified)
-	case AddFunctionName, AndFunctionName, OrFunctionName:
+	case AddFunctionName, AndFunctionName, OrFunctionName, XorFunctionName:
 		return handleArithmeticFunction(f, newArgs, modified)
 	case SliceFunctionName:
 		return handleSliceFunction(f, newArgs, modified)
@@ -980,6 +981,8 @@ func handleArithmeticFunction(f *Function, args []Term, modified bool) (Term, er
 		result = left & right
 	case OrFunctionName:
 		result = left | right
+	case XorFunctionName:
+		result = left ^ right
 	}
 
 	// Result type is the same as the type of the first argument.

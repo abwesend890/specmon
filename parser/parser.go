@@ -226,6 +226,11 @@ func (p *Parser) parseTerm(c *sitter.Node) term.Term {
 			p.parseTerm(c.Child(0)),
 			p.parseTerm(c.Child(2)),
 		})
+	case "xor_term":
+		return term.NewFunction(term.XorFunctionName, []term.Term{
+			p.parseTerm(c.Child(0)),
+			p.parseTerm(c.Child(2)),
+		})
 	default:
 		traverse(c, 0)
 		panic(fmt.Sprintf("unhandled term type: %s (%s)", c.Type(), c.Content(p.src)))
