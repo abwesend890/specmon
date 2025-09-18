@@ -56,6 +56,7 @@ const (
 var ReservedNames = data.NewSet[string](
 	PairFunctionName,
 	SliceFunctionName,
+	XorFunctionName,
 	CatFunctionName,
 	AddFunctionName,
 	AndFunctionName,
@@ -877,8 +878,10 @@ func Evaluate(t Term) (Term, error) {
 	switch f.Name {
 	case CatFunctionName:
 		return handleCatFunction(f, newArgs, modified)
-	case AddFunctionName, AndFunctionName, OrFunctionName, XorFunctionName:
+	case AddFunctionName, AndFunctionName, OrFunctionName:
 		return handleArithmeticFunction(f, newArgs, modified)
+	case XorFunctionName:
+		return handleXorFunction(f, newArgs, modified)
 	case SliceFunctionName:
 		return handleSliceFunction(f, newArgs, modified)
 	case ReverseFuncName:
@@ -948,6 +951,68 @@ func handleCatFunction(f *Function, args []Term, modified bool) (Term, error) {
 	}
 
 	return NewConstant[[]byte](bytes), nil
+}
+
+func xorLeftKeep(a, b []byte) []byte {
+	// left-aligned: index 0 is LSB/first; extra bytes are preserved (XOR with 0)
+	n := len(a)
+	if len(b) > n {
+		n = len(b)
+	}
+	out := make([]byte, n)
+	if len(a) >= len(b) {
+		copy(out, a)
+		for i := 0; i < len(b); i++ {
+			out[i] = a[i] ^ b[i]
+		}
+	} else {
+		copy(out, b)
+		for i := 0; i < len(a); i++ {
+			out[i] = a[i] ^ b[i]
+		}
+	}
+	return out
+}
+
+func handleXorFunction(f *Function, args []Term, modified bool) (Term, error) {
+	if len(f.Args) != BinaryArity {
+		return nil, ErrBinaryArity
+	}
+
+	left, err := AsBytes(args[0])
+	if err != nil {
+		if modified {
+			return NewFunction(f.Name, args), nil
+		}
+
+		return f, nil
+	}
+
+	right, err := AsBytes(args[1])
+	if err != nil {
+		if modified {
+			return NewFunction(f.Name, args), nil
+		}
+
+		return f, nil
+	}
+
+	// perform XOR
+	res := xorLeftKeep(left, right)
+
+	// Result type is the same as the type of the first argument.
+	switch args[0].(type) {
+	case *Constant[int]:
+		res, err := utils.BytesToInt(res, internalByteOrder())
+		if err != nil {
+			panic("unable to convert bytes to int in handle xor")
+		}
+		return NewConstant[int](res), nil
+	case *Constant[[]byte]:
+		return NewConstant[[]byte](res), nil
+	default:
+		return nil, ErrInvalidType
+	}
 }
 
 func handleArithmeticFunction(f *Function, args []Term, modified bool) (Term, error) {
