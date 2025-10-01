@@ -1046,8 +1046,6 @@ func handleArithmeticFunction(f *Function, args []Term, modified bool) (Term, er
 		result = left & right
 	case OrFunctionName:
 		result = left | right
-	case XorFunctionName:
-		result = left ^ right
 	}
 
 	// Result type is the same as the type of the first argument.
