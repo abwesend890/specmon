@@ -36,24 +36,29 @@ import (
 )
 
 const (
-	ConstantType      = "constant"
-	VariableType      = "variable"
-	FunctionType      = "function"
-	PairFunctionName  = "pair"
-	SliceFunctionName = "slice"
-	ReverseFuncName   = "reverse"
-	ExpFunctionName   = "exp"
-	XorFunctionName   = "xor"
-	AndFunctionName   = "and"
-	OrFunctionName    = "or"
-	AddFunctionName   = "add"
-	BinaryArity       = 2
-	TernaryArity      = 3
+	ConstantType       = "constant"
+	VariableType       = "variable"
+	FunctionType       = "function"
+	PairFunctionName   = "pair"
+	SliceFunctionName  = "slice"
+	ReverseFuncName    = "reverse"
+	ExpFunctionName    = "exp"
+	XorFunctionName    = "xor"
+	AndFunctionName    = "and"
+	OrFunctionName     = "or"
+	AddFunctionName    = "add"
+	GrpcFunctionName   = "grpc"
+	GetFromPairByIndex = "getFromPairByIndex"
+	UnaryArity         = 1
+	BinaryArity        = 2
+	TernaryArity       = 3
+	QuaternaryArity    = 4
 
 	PublicPrefix = "$"
 )
 
 var ReservedNames = data.NewSet[string](
+	GetFromPairByIndex,
 	PairFunctionName,
 	SliceFunctionName,
 	XorFunctionName,
@@ -61,6 +66,8 @@ var ReservedNames = data.NewSet[string](
 	AddFunctionName,
 	AndFunctionName,
 	OrFunctionName,
+	GrpcFunctionName,
+
 	string(FormatIntType),
 	string(FormatStringType),
 	string(FormatByteType))
@@ -83,10 +90,11 @@ var (
 
 	ErrInvalidFormatFunction = errors.New("invalid format: expected byte(), string(), int()")
 
-	ErrUnaryArity   = errors.New("expected arity 1")
-	ErrBinaryArity  = errors.New("expected arity 2")
-	ErrTernaryArity = errors.New("expected arity 3")
-	ErrInvalidType  = errors.New("invalid type for arithmetic function")
+	ErrUnaryArity      = errors.New("expected arity 1")
+	ErrBinaryArity     = errors.New("expected arity 2")
+	ErrTernaryArity    = errors.New("expected arity 3")
+	ErrQuaternaryArity = errors.New("expected arity 4")
+	ErrInvalidType     = errors.New("invalid type for arithmetic function")
 )
 
 type Term interface {
@@ -864,6 +872,36 @@ func ReplaceFormats(t Term) Term {
 	return s
 }
 
+func handleGetFromPairByIndexFunction(f *Function, args []Term, modified bool) (Term, error) {
+	if len(args) != BinaryArity {
+		return nil, ErrBinaryArity
+	}
+
+	// inner is the function we want to get the arguments from
+	inner, err := AsFunction(args[0])
+	if err != nil {
+		if modified {
+			return NewFunction(f.Name, args), nil
+		}
+		return f, nil
+	}
+	if inner.Name != "pair" {
+		return NewFunction(f.Name, args), nil
+	}
+
+	indexToGetFrom, err := AsInt(f.Args[1])
+	if err != nil {
+		if modified {
+			return NewFunction(f.Name, args), nil
+		}
+		return f, nil
+	}
+	if len(inner.Args) <= indexToGetFrom {
+		return nil, errors.New("Too less args for " + f.Name + " for " + f.String())
+	}
+	return inner.Args[indexToGetFrom], nil
+}
+
 func Evaluate(t Term) (Term, error) {
 	f, err := AsFunction(t)
 	if err != nil {
@@ -876,6 +914,10 @@ func Evaluate(t Term) (Term, error) {
 	}
 
 	switch f.Name {
+	case GetFromPairByIndex:
+		return handleGetFromPairByIndexFunction(f, newArgs, modified)
+	case GrpcFunctionName:
+		return handleGrpcFunction(f, newArgs, modified)
 	case CatFunctionName:
 		return handleCatFunction(f, newArgs, modified)
 	case AddFunctionName, AndFunctionName, OrFunctionName:
