@@ -105,6 +105,9 @@ func grpcCall(server string, serviceName string, methodName string, data []uint8
 	}
 
 	methodDesc := svcDesc.Methods().ByName(protoreflect.Name(methodName))
+	if methodDesc == nil {
+		panic(fmt.Sprintf("Unable to find method name %s", methodName))
+	}
 
 	request := dynamicpb.NewMessage(methodDesc.Input())
 	response := dynamicpb.NewMessage(methodDesc.Output())
