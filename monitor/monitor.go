@@ -690,7 +690,7 @@ func (m *Monitor) ProcessEvents(events <-chan *TimedEvent, rewrite bool, pid int
 				if err := utils.KillProcess(pid); err != nil {
 					log.Errorf("failed to kill process: %v", err)
 				}
-				log.Fatalf("error processing event: %v %s", err, event.Event)
+				log.Fatalf("event processing error: %v for event %s", err, event.Event)
 			}
 
 			m.stats.LatenciesProcessed = append(m.stats.LatenciesProcessed, time.Since(time.Unix(0, event.Time)))
