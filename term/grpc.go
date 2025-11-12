@@ -210,6 +210,11 @@ func grpcMessageToFunction(dynMsg *dynamicpb.Message) (*Function, error) {
 			resPair.Args[0] = NewConstant[string](fieldName)
 			resPair.Args[1] = parsedMsg
 
+		case fieldDesc.Kind() == protoreflect.StringKind:
+			resPair = NewFunction("pair", make([]Term, 2))
+			resPair.Args[0] = NewConstant[string](fieldName)
+			resPair.Args[1] = NewConstant[string](value.String())
+
 		default:
 			panic(fmt.Sprintf("unhandled kind in grpcMessageToFunction: %v", fieldDesc.Kind()))
 		}
