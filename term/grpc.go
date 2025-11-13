@@ -210,7 +210,7 @@ func grpcMessageToFunction(dynMsg *dynamicpb.Message) (*Function, error) {
 			resPair.Args[0] = NewConstant[string](fieldName)
 			resPair.Args[1] = parsedMsg
 
-		case fieldDesc.Kind() == protoreflect.StringKind:
+		case fieldDesc.Kind() == protoreflect.StringKind || fieldDesc.Kind() == protoreflect.EnumKind:
 			resPair = NewFunction("pair", make([]Term, 2))
 			resPair.Args[0] = NewConstant[string](fieldName)
 			resPair.Args[1] = NewConstant[string](value.String())
