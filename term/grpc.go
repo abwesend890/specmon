@@ -22,7 +22,6 @@ import (
 	"context"
 	"errors"
 	"fmt"
-	"log"
 
 	"github.com/jhump/protoreflect/v2/grpcreflect"
 	"google.golang.org/grpc"
@@ -30,6 +29,8 @@ import (
 
 	"google.golang.org/protobuf/reflect/protoreflect"
 	"google.golang.org/protobuf/types/dynamicpb"
+
+	log "github.com/sirupsen/logrus"
 )
 
 func handleGrpcFunction(f *Function, args []Term, modified bool) (Term, error) {
@@ -51,7 +52,7 @@ func handleGrpcFunction(f *Function, args []Term, modified bool) (Term, error) {
 		return f, nil
 	}
 
-	log.Printf("server: %s, service: %s, request: %s", server, serviceName, requestName)
+	log.Debugf("grpc call - server: %s, service: %s, request: %s", server, serviceName, requestName)
 
 	// we need the type conversion to get real string via Value;
 	// if we user String(), the string is wrapped with ''
