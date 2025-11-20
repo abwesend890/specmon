@@ -25,11 +25,12 @@ import (
 	"encoding/json"
 	"errors"
 	"fmt"
-	log "github.com/sirupsen/logrus"
 	"hash/fnv"
 	"slices"
 	"strconv"
 	"strings"
+
+	log "github.com/sirupsen/logrus"
 
 	"github.com/specmon/specmon/data"
 	"github.com/specmon/specmon/utils"
