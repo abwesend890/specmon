@@ -1,5 +1,5 @@
 package data
 
 type Settings struct {
-	LogTruncate int64 `json:"log-truncate" yaml:"log-truncate"`
+	TruncateArgs int64 `json:"truncate-args" yaml:"truncate-args"`
 }

@@ -261,7 +261,7 @@ func (f Facts) ExpandFacts(b *term.Binding) []*Fact {
 //		else print max length printed for each arg is truncateArgs.
 func (f *Fact) LogArgs(settings *data.Settings) {
 	// retrieve Settings
-	argMaxLen := settings.LogTruncate
+	argMaxLen := settings.TruncateArgs
 
 	// check if printing arguments is disabled
 	if argMaxLen == 0 {

@@ -88,7 +88,7 @@ func (r *MonitorConfig) RunE(cmd *cobra.Command, args []string) error {
 	// factArgMaxLen specifies the maximum length of a fact's arguments before they are truncated in log output.
 	truncateArgs, _ := cmd.Root().Flags().GetInt64("truncate-args")
 	// Define User Settings for Monitor
-	settings := &data.Settings{LogTruncate: truncateArgs}
+	settings := &data.Settings{TruncateArgs: truncateArgs}
 	// Create the main monitor
 	m, err = monitor.NewMonitor(decompRules, settings)
 	if err != nil {
