@@ -98,7 +98,7 @@ func NewMonitor(rules []*rule.Rule, settings *data.Settings) (*Monitor, error) {
 		rules:    rulesMap,
 		configs:  data.NewHashSet(NewConfig()),
 		stats:    &Stats{},
-		settings: &data.Settings{},
+		settings: settings,
 	}, nil
 }
 
