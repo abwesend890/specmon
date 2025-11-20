@@ -73,10 +73,10 @@ type Monitor struct {
 	stats *Stats
 
 	// settings hold user configurations to alter monitor behavior
-	settings map[string]interface{}
+	settings *data.Settings
 }
 
-func NewMonitor(rules []*rule.Rule, settings map[string]interface{}) (*Monitor, error) {
+func NewMonitor(rules []*rule.Rule, settings *data.Settings) (*Monitor, error) {
 	if err := checkWellformedness(rules); err != nil {
 		return nil, err
 	}
@@ -98,12 +98,12 @@ func NewMonitor(rules []*rule.Rule, settings map[string]interface{}) (*Monitor, 
 		rules:    rulesMap,
 		configs:  data.NewHashSet(NewConfig()),
 		stats:    &Stats{},
-		settings: settings,
+		settings: &data.Settings{},
 	}, nil
 }
 
 // Settings returns the configurations of the monitor.
-func (m *Monitor) Settings() map[string]interface{} {
+func (m *Monitor) Settings() *data.Settings {
 	return m.settings
 }
 
