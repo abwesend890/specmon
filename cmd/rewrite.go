@@ -73,8 +73,8 @@ func (r *RewriteConfig) RunE(cmd *cobra.Command, args []string) error {
 	defer eventSource.Close()
 
 	truncateArgs, _ := cmd.Root().Flags().GetInt64("truncate-args")
+	settings := &data.Settings{TruncateArgs: truncateArgs}
 
-	settings := &data.Settings{LogTruncate: truncateArgs}
 	m, err = monitor.NewMonitor(decompRules, settings)
 	if err != nil {
 		return fmt.Errorf("cannot create monitor: %w", err)
