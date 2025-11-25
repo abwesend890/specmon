@@ -97,7 +97,7 @@ func grpcCall(server string, serviceName string, methodName string, data []uint8
 	resolver := reflectClient.AsResolver()
 	svcDescGen, err := resolver.FindDescriptorByName(protoreflect.FullName(serviceName))
 	if err != nil {
-		panic("could not find service descriptor")
+		return nil, fmt.Errorf("could not find service descriptor '%s'", serviceName)
 	}
 
 	svcDesc, ok := svcDescGen.(protoreflect.ServiceDescriptor)
