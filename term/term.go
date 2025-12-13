@@ -917,7 +917,7 @@ func handleGetFromPairByIndexFunction(f *Function, args []Term, modified bool) (
 		return f, nil
 	}
 	if len(inner.Args) <= indexToGetFrom {
-		log.Errorf("Too less args for " + f.Name + " for " + f.String())
+		log.Infof("Too less args for " + f.Name + " for " + f.String())
 		return f, nil
 	}
 	return inner.Args[indexToGetFrom], nil
