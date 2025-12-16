@@ -88,7 +88,7 @@ func grpcCall(server string, serviceName string, methodName string, data []uint8
 	opts := []grpc.DialOption{grpc.WithTransportCredentials(insecure.NewCredentials())}
 	conn, err := grpc.NewClient(server, opts...)
 	if err != nil {
-		return nil, fmt.Errorf("could not establish connection: %w", err)
+		return nil, fmt.Errorf("could create new client: %w", err)
 	}
 	defer conn.Close()
 
@@ -97,7 +97,7 @@ func grpcCall(server string, serviceName string, methodName string, data []uint8
 	resolver := reflectClient.AsResolver()
 	svcDescGen, err := resolver.FindDescriptorByName(protoreflect.FullName(serviceName))
 	if err != nil {
-		return nil, fmt.Errorf("could not find service descriptor '%s'", serviceName)
+		return nil, fmt.Errorf("could not find service descriptor '%s' on server '%s'", serviceName, server)
 	}
 
 	svcDesc, ok := svcDescGen.(protoreflect.ServiceDescriptor)
